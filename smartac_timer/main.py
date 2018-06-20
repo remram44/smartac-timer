@@ -7,7 +7,13 @@ logging.basicConfig(level=logging.WARNING)
 
 app = Flask('smartac_timer',
             template_folder=os.path.join(os.path.dirname(__file__),
-                                         'templates'))
+                                         'templates'),
+            static_url_path='/static')
+
+
+@app.route('/static/<path:path>')
+def builtin_static_route(path):
+    return send_from_directory('static', path)
 
 
 @app.route('/')
