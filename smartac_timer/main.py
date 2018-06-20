@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import logging
 import os
 
@@ -19,3 +19,16 @@ def builtin_static_route(path):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/set-timer', methods=['POST'])
+def set_timer():
+    req = request.get_json()
+    modlet = req.pop('modlet')
+    mode = req.pop('mode')
+    timeout = req.pop('time')
+    if req:
+        raise ValueError
+    logging.warning("Got request: modlet=%s, mode=%s, timeout=%s",
+                    modlet, mode, timeout)
+    return None
