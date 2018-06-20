@@ -2,14 +2,15 @@ if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/static/service-worker.js', {});
 };
 
-var buttons = document.getElementsByClassName('off-button');
+var buttons = document.getElementsByClassName('button');
 for(var i = 0; i < buttons.length; ++i) {
     var button = buttons[i];
     button.addEventListener('click', function() {
         var classes = button.classList;
         var time = button.attributes['data-timeout'];
         var modlet = button.attributes['data-modlet'];
-        setTimer(modlet, 'off', time);
+        var mode = button.attributes['data-mode'];
+        setTimer(modlet, mode, time);
     });
 }
 

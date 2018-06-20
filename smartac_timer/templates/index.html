@@ -5,11 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>SmartAC Timer</title>
     <link rel="manifest" href="/static/pwa.webmanifest"/>
+    <style type="text/css">
+button {
+    display: block;
+}
+    </style>
   </head>
   <body>
-    <h1>Bedroom</h1>
-    <button class="off-button" data-timeout="30" data-modlet="1234">Off in 30min</button>
-    <button class="off-button" data-timeout="60" data-modlet="1234">Off in 1hr</button>
+{% for name, id in devices.items() %}
+    <h1>{{ name }}</h1>
+    <button class="button on" data-mode="on" data-timeout="0" data-modlet="{{ id }}">On now</button>
+    <button class="button off" data-mode="off" data-timeout="0" data-modlet="{{ id }}">Off now</button>
+    <button class="button off" data-mode="off" data-timeout="30" data-modlet="{{ id }}">Off in 30 minutes</button>
+    <button class="button off" data-mode="off" data-timeout="60" data-modlet="{{ id }}">Off in 1 hour</button>
+{% endfor %}
 
     <script src="/static/index.js"></script>
   </body>
