@@ -38,7 +38,11 @@ def set_timer():
         raise ValueError
     logging.warning("Got request: modlet=%s, mode=%s, timeout=%s",
                     modlet, mode, timeout)
-    update_smartac(modlet, mode)  # FIXME: schedule for later
+    unix_at.submit_python_job('smartac_timer.update_smartac',
+                              'now + %s minutes' % timeout,
+                              modlet,
+                              mode)
+    # TODO: Replace old schedule (save `at(1)` job name in a file?)
     return jsonify({'changed': True,
                     'time': datetime.utcnow(),
                     'turn': mode})
