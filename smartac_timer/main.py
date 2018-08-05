@@ -1,7 +1,9 @@
 from datetime import datetime
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, send_from_directory
 import logging
 import os
+import requests
+import unix_at
 
 
 logging.basicConfig(level=logging.WARNING)
@@ -38,10 +40,11 @@ def set_timer():
         raise ValueError
     logging.warning("Got request: modlet=%s, mode=%s, timeout=%s",
                     modlet, mode, timeout)
-    unix_at.submit_python_job('smartac_timer.update_smartac',
-                              'now + %s minutes' % timeout,
-                              modlet,
-                              mode)
+    job = unix_at.submit_python_job('smartac_timer.main.update_smartac',
+                                    'now + %s minutes' % timeout,
+                                    modlet,
+                                    mode)
+    logging.warning("Submitted job %s", job.name)
     # TODO: Replace old schedule (save `at(1)` job name in a file?)
     return jsonify({'changed': True,
                     'time': datetime.utcnow(),
@@ -49,8 +52,8 @@ def set_timer():
 
 
 def update_smartac(modlet, mode):
-    mode = dict(on=True, off=False)[mode]
-    logging.error("Not actually triggering modlet (mode=%r)", mode)
+    set_mode = dict(on=True, off=False)[mode]
+    logging.warning("Triggering AC: mode=%s", mode)
     req = requests.post(
         'https://mymodlet.com/SmartAC/UserSettings',
         headers={
@@ -60,11 +63,11 @@ def update_smartac(modlet, mode):
             'Content-Type': 'application/json; charset=utf-8',
             'Accept': 'application/json, text/javascript',
         },
-        body=json.dumps({
+        json={
             'applianceId': modlet,
             'targetTemperature': 72,
-            'thermostated': mode
-        })
+            'thermostated': set_mode
+        },
     )
     req.raise_for_status()
     if not req.json().get('Success'):
