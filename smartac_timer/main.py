@@ -43,7 +43,8 @@ def set_timer():
     job = unix_at.submit_python_job('smartac_timer.main.update_smartac',
                                     'now + %s minutes' % timeout,
                                     modlet,
-                                    mode)
+                                    mode,
+                                    python=SETTINGS.get('PYTHON'))
     logging.warning("Submitted job %s", job.name)
     # TODO: Replace old schedule (save `at(1)` job name in a file?)
     return jsonify({'changed': True,
