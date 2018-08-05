@@ -52,23 +52,19 @@ def set_timer():
 
 
 def update_smartac(modlet, mode):
-    set_mode = dict(on=True, off=False)[mode]
+    set_mode = dict(on='SwitchOn', off='SwitchOff')[mode]
     logging.warning("Triggering AC: mode=%s", mode)
     req = requests.post(
-        'https://mymodlet.com/SmartAC/UserSettings',
+        'https://web.mymodlet.com/Devices/%s' % set_mode,
         headers={
-            'Referer': 'https://mymodlet.com/SmartAC',
+            'Referer': 'https://web.mymodlet.com/Devices',
             'X-Requested-With': 'XMLHttpRequest',
             'Cookie': SETTINGS['COOKIE'],
-            'Content-Type': 'application/json; charset=utf-8',
-            'Accept': 'application/json, text/javascript',
+            'Content-Type': 'application/json',
+            'Accept': '*/*',
         },
         json={
-            'applianceId': modlet,
-            'targetTemperature': 72,
-            'thermostated': set_mode
+            'data': '{"id":"%s"}' % modlet,  # Yes, it is double-json-encoded
         },
     )
     req.raise_for_status()
-    if not req.json().get('Success'):
-        raise ValueError("Server indicated failure")
