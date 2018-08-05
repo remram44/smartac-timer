@@ -21,6 +21,7 @@ function setTimer(modlet, mode, time) {
         body: JSON.stringify({mode: mode, modlet: modlet, time: time}),
         cache: 'no-cache',
         headers: {'content-type': 'application/json'},
+        credentials: 'include',
     }).then(function(response) {
         if(response.status == 200) {
             response.json().then(function(obj) {
