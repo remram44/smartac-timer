@@ -6,7 +6,7 @@ import requests
 import unix_at
 
 
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO)
 
 with open(os.path.join(os.path.dirname(os.path.dirname(__file__)),
                        'settings.py'), 'rb') as fp:
