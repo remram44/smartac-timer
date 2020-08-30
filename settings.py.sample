@@ -1,5 +1,2 @@
-COOKIE = "AWSELB=123456789...123456789I"
-DEVICES = {
-    "Living room": 1234,
-    "Bedroom": 1235,
-}
+email = 'me@example.org'
+password = 'hunter2'
