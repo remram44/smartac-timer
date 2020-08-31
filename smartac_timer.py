@@ -7,7 +7,8 @@ import os
 from starlette.applications import Starlette
 from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
-from starlette.routing import Route
+from starlette.routing import Route, Mount
+from starlette.staticfiles import StaticFiles
 
 
 logger = logging.getLogger('smartac_timer')
@@ -230,6 +231,7 @@ routes = [
         '/api/set-timer/{device:int}', set_timer,
         methods=['POST'],
     ),
+    Mount('/', app=StaticFiles(directory='static', html=True)),
 ]
 
 

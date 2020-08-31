@@ -1,5 +1,13 @@
 [[package]]
 category = "main"
+description = "File support for asyncio."
+name = "aiofiles"
+optional = false
+python-versions = "*"
+version = "0.5.0"
+
+[[package]]
+category = "main"
 description = "Async http client/server framework (asyncio)"
 name = "aiohttp"
 optional = false
@@ -187,11 +195,15 @@ python = "<3.8"
 version = ">=3.7.4"
 
 [metadata]
-content-hash = "3eca507ace6c763fd04c607738ee34af4d50a7d237202bf711b8bd17d666b695"
+content-hash = "89eec35fd95d89e9543073114f2214c669df148ab71e621baa68e772c22d7d0d"
 lock-version = "1.0"
 python-versions = "^3.7"
 
 [metadata.files]
+aiofiles = [
+    {file = "aiofiles-0.5.0-py3-none-any.whl", hash = "sha256:377fdf7815cc611870c59cbd07b68b180841d2a2b79812d8c218be02448c2acb"},
+    {file = "aiofiles-0.5.0.tar.gz", hash = "sha256:98e6bcfd1b50f97db4980e182ddd509b7cc35909e903a8fe50d8849e02d815af"},
+]
 aiohttp = [
     {file = "aiohttp-3.0.0-cp35-cp35m-macosx_10_10_x86_64.whl", hash = "sha256:990767e6ce98d58b3ff748975592e8c64d26748b7a8791bb194d3e28a3532e1a"},
     {file = "aiohttp-3.0.0-cp35-cp35m-macosx_10_11_x86_64.whl", hash = "sha256:72e8a0f26305628d54d7984489261d7ff52f3bd337d43ff2f11b011361265d55"},
