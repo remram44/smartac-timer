@@ -137,10 +137,7 @@ async def status(request):
     ))
 
 
-async def switch(request):
-    mode = request.path_params['mode']
-    device = request.path_params['device']
-
+async def do_switch(device, mode):
     try:
         set_mode = dict(on='SwitchOn', off='SwitchOff')[mode]
     except KeyError:
@@ -158,6 +155,16 @@ async def switch(request):
         },
     )
     response.raise_for_status()
+
+
+async def switch(request):
+    device = request.path_params['device']
+    mode = request.path_params['mode']
+    if mode not in ('on', 'off'):
+        raise HTTPException(400)
+
+    await do_switch(device, mode)
+
     return JSONResponse({})
 
 
