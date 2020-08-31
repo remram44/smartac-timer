@@ -35,6 +35,9 @@ def get_http_client():
                 'Accept': '*/*',
             },
         )
+        if os.path.exists('cookies.bin'):
+            logger.info("Loading cookies from file")
+            get_http_client._instance.cookie_jar.load('cookies.bin')
     return get_http_client._instance
 
 
@@ -81,6 +84,7 @@ async def mymodlet_req(method, path, **kwargs):
         ):
             response.raise_for_status()
             re_authenticated = True
+        http_client.cookie_jar.save('cookies.bin')
 
 
 mymodlet_get = lambda url, **kwargs: mymodlet_req('GET', url, **kwargs)
