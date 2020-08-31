@@ -1,3 +1,57 @@
+function entriesMatch(a, b) {
+  return a.id == b.id;
+}
+
+function reconcileList(container, currentList, newList, buildFn) {
+  var currentElement = container.firstElementChild;
+  var currentIdx = 0;
+  var newIdx = 0;
+  while(true) {
+    if(currentIdx < currentList.length) {
+      if(newIdx >= newList.length || currentList[currentIdx].id < newList[newIdx].id) {
+        // Delete current element
+        var next = currentElement.nextElementSibling;
+        container.removeChild(currentElement);
+        currentElement = next;
+        currentIdx++;
+      } else if(currentList[currentIdx].id > newList[newIdx].id) {
+        // Insert before current
+        var newChild = buildFn(newList[newIdx]);
+        container.insertBefore(newChild, currentElement);
+        newIdx++;
+      } else {
+        if(entriesMatch(currentList[currentIdx], newList[newIdx])) {
+          // Entries match, move on
+          currentIdx++;
+          newIdx++;
+          currentElement = currentElement.nextElementSibling;
+        } else {
+          // Entries don't match, delete current element
+          var next = currentElement.nextElementSibling;
+          container.removeChild(currentElement);
+          currentElement = next;
+          currentIdx++;
+        }
+      }
+    } else {
+      if(newIdx < newList.length) {
+        // Insert new element
+        var newChild = buildFn(newList[newIdx]);
+        if(currentElement) {
+          container.insertBefore(newChild, currentElement);
+        } else {
+          container.appendChild(newChild);
+        }
+        newIdx++;
+      } else {
+        // Done with both lists
+        break;
+      }
+    }
+  }
+  return newList;
+}
+
 function switchDevice(mode, deviceId) {
   var req = new XMLHttpRequest();
   req.open('POST', '/api/switch/' + deviceId + '/' + mode);
