@@ -144,7 +144,7 @@ async def status(request):
         if device_id in timers:
             mode, time, _ = timers[device_id]
             device_info['timer'] = dict(
-                when=time.isoformat(),
+                when=time.isoformat() + 'Z',
                 mode=mode,
             )
         devices.append(device_info)

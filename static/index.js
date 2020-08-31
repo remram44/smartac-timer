@@ -104,6 +104,11 @@ function setDeviceTimer(mode, deviceId, minutes) {
   }));
 }
 
+function formatTime(isoDate) {
+  var d = new Date(isoDate);
+  return d.getHours() + ':' + d.getMinutes();
+}
+
 function renderDeviceRow(d) {
   var inv;
   if(d.status === 'on') {
@@ -132,7 +137,7 @@ function renderDeviceRow(d) {
   }
   if(d.timer) {
     h += (
-      '<td>turn ' + d.timer.mode + ' at ' + d.timer.when + '</td>'
+      '<td>turn ' + d.timer.mode + ' at ' + formatTime(d.timer.when) + '</td>'
     );
   } else {
     h += '<td></td>';
