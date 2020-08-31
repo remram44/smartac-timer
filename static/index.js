@@ -86,12 +86,18 @@ function reconcileList(container, currentList, newList, buildFn) {
 function switchDevice(mode, deviceId) {
   var req = new XMLHttpRequest();
   req.open('POST', '/api/switch/' + deviceId + '/' + mode);
+  req.onload = function() {
+    updateStatusSoon(2);
+  };
   req.send();
 }
 
 function setDeviceTimer(mode, deviceId, minutes) {
   var req = new XMLHttpRequest();
   req.open('POST', '/api/set-timer/' + deviceId);
+  req.onload = function() {
+    updateStatusSoon(2);
+  };
   req.send(JSON.stringify({
     delay: minutes * 60,
     mode: mode,
@@ -142,6 +148,14 @@ function renderDeviceRow(d) {
 }
 
 var currentStatus = undefined;
+var updateTimer = undefined;
+
+function updateStatusSoon(delay) {
+  if(updateTimer !== undefined) {
+    clearTimeout(updateTimer);
+  }
+  updateTimer = setTimeout(updateStatus, delay * 1000);
+}
 
 function updateStatus() {
   var req = new XMLHttpRequest();
@@ -159,4 +173,8 @@ function updateStatus() {
     currentStatus = newStatus;
   };
   req.send();
+
+  updateStatusSoon(30);
 }
+
+updateStatus();
