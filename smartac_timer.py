@@ -1,4 +1,6 @@
 import aiohttp
+import asyncio
+from datetime import datetime, timedelta
 import json
 import logging
 import os
@@ -21,6 +23,10 @@ with open(os.path.join(os.path.dirname(__file__),
                        'settings.py'), 'rb') as fp:
     SETTINGS = {}
     exec(fp.read(), SETTINGS, SETTINGS)
+
+
+# Device timers
+timers = {}
 
 
 def get_http_client():
@@ -134,6 +140,12 @@ async def status(request):
                 device_info['temperature'] = temp_f(
                     modlet['thermostat']['currentTemperature'],
                 )
+        if device_id in timers:
+            mode, time, _ = timers[device_id]
+            device_info['timer'] = dict(
+                when=time.isoformat(),
+                mode=mode,
+            )
         devices.append(device_info)
 
     return JSONResponse(dict(
@@ -146,6 +158,11 @@ async def do_switch(device, mode):
         set_mode = dict(on='SwitchOn', off='SwitchOff')[mode]
     except KeyError:
         raise HTTPException(404)
+
+    # Cancel pending timers
+    if device in timers:
+        _, _, fut = timers.pop(device)
+        fut.cancel()
 
     logger.info("Switching AC %s", mode)
     response = await mymodlet_post(
@@ -172,10 +189,45 @@ async def switch(request):
     return JSONResponse({})
 
 
+async def sleep_then_switch(delay, device, mode):
+    try:
+        await asyncio.sleep(delay)
+        timers.pop(device, None)
+        await asyncio.shield(do_switch(device, mode))
+    except asyncio.CancelledError:
+        pass
+
+
+async def set_timer(request):
+    device = request.path_params['device']
+    obj = await request.json()
+    delay = obj.pop('delay')
+    mode = obj.pop('mode', 'off')
+    if mode not in ('on', 'off'):
+        raise HTTPException(400)
+    if obj:
+        raise HTTPException(400)
+
+    if device in timers:
+        _, _, fut = timers.pop(device)
+        fut.cancel()
+
+    fut = asyncio.get_event_loop().create_task(
+        sleep_then_switch(delay, device, mode),
+    )
+    timers[device] = mode, datetime.utcnow() + timedelta(seconds=delay), fut
+
+    return JSONResponse({})
+
+
 routes = [
     Route('/api/status', status),
     Route(
         '/api/switch/{device:int}/{mode}', switch,
+        methods=['POST'],
+    ),
+    Route(
+        '/api/set-timer/{device:int}', set_timer,
         methods=['POST'],
     ),
 ]
