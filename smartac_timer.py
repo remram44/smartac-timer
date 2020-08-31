@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from starlette.applications import Starlette
+from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
@@ -83,6 +84,7 @@ async def mymodlet_req(method, path, **kwargs):
 
 
 mymodlet_get = lambda url, **kwargs: mymodlet_req('GET', url, **kwargs)
+mymodlet_post = lambda url, **kwargs: mymodlet_req('POST', url, **kwargs)
 
 
 def temp_f(f):
@@ -135,8 +137,36 @@ async def status(request):
     ))
 
 
+async def switch(request):
+    mode = request.path_params['mode']
+    device = request.path_params['device']
+
+    try:
+        set_mode = dict(on='SwitchOn', off='SwitchOff')[mode]
+    except KeyError:
+        raise HTTPException(404)
+
+    logger.info("Switching AC %s", mode)
+    response = await mymodlet_post(
+        '/Devices/%s' % set_mode,
+        headers={
+            'Referer': 'https://web.mymodlet.com/Devices',
+            'Content-Type': 'application/json',
+        },
+        json={
+            'data': '{"id":"%s"}' % device,  # Yes, it is double-json-encoded
+        },
+    )
+    response.raise_for_status()
+    return JSONResponse({})
+
+
 routes = [
     Route('/api/status', status),
+    Route(
+        '/api/switch/{device:int}/{mode}', switch,
+        methods=['POST'],
+    ),
 ]
 
 
