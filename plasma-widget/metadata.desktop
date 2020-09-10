@@ -1,0 +1,18 @@
+[Desktop Entry]
+Name=SmartAC
+Comment=Control a ThinkEco SmartAC
+
+Type=Service
+Icon=battery
+X-KDE-ServiceTypes=Plasma/Applet
+
+X-Plasma-API=declarativeappletscript
+X-Plasma-MainScript=ui/main.qml
+
+X-KDE-PluginInfo-Author=Remi Rampin
+X-KDE-PluginInfo-Email=r@remirampin.com
+X-KDE-PluginInfo-Name=com.remirampin.smartac
+X-KDE-PluginInfo-Version=1
+X-KDE-PluginInfo-Category=Environment and Weather
+X-Plasma-NotificationArea=true
+X-Plasma-NotificationAreaCategory=SystemServices
